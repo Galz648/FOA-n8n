@@ -16,8 +16,8 @@ services:
 
   flask-app:
     build: 
-      context: ..
-      dockerfile: video_service/Dockerfile.flask
+      context: .
+      dockerfile: Dockerfile.flask
     ports:
       - "5001:5001"
     networks:
