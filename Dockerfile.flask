@@ -14,8 +14,12 @@ RUN poetry config virtualenvs.create false
 # Install dependencies including dev dependencies
 RUN poetry install --no-interaction --no-ansi --no-root
 
+# Create videos directory
+RUN mkdir -p videos && chmod 777 videos
+
 # Copy application code
 COPY ../app.py .
+COPY ../tiktok.py .
 
 # Expose the port the app runs on
 EXPOSE 5001

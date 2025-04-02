@@ -20,6 +20,8 @@ services:
       dockerfile: Dockerfile.flask
     ports:
       - "5001:5001"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     networks:
       - app-network
 
