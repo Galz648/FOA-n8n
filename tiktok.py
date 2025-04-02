@@ -3,7 +3,11 @@ import os
 import google.genai
 import time
 
+
+# TODO: implement premature errors if one of the variables are missing
 client = google.genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+prompt = os.getenv("PROMPT")
+model_name = os.getenv("MODEL_NAME")
 
 
 def generate_video_id(url: str):
@@ -42,11 +46,11 @@ def upload_video_for_analysis(video_file_name: str):
     return video_file
 
 
-def get_video_analysis(video_url: str, prompt: str, model_name: str):
+def get_video_analysis(video_url: str):
     file_name = download_tiktok_video(video_url)
     video_file = upload_video_for_analysis(file_name)
     response = client.models.generate_content(
-        model=model_name,
+        model=ai_model,
         contents=[
             video_file,
             prompt,

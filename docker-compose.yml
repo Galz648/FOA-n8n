@@ -22,6 +22,8 @@ services:
       - "5001:5001"
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - PROMPT=${PROMPT}
+      - MODEL_NAME=${MODEL_NAME}
     networks:
       - app-network
 
