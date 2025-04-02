@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
 import logging
+from flask_cors import CORS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 
 @app.route("/test", methods=["POST"])

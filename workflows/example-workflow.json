@@ -31,7 +31,11 @@
                     }
                 },
                 "options": {
-                    "timeout": 10000
+                    "timeout": 10000,
+                    "rejectUnauthorized": false,
+                    "followRedirect": true,
+                    "resolveWithFullResponse": true,
+                    "followAllRedirects": true
                 }
             },
             "name": "HTTP Request",
