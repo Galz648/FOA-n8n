@@ -2,20 +2,32 @@ import yt_dlp
 import os
 import google.genai
 import time
+from urllib.parse import urlparse
 
 
-# TODO: implement premature errors if one of the variables are missing
-client = google.genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-prompt = os.getenv("PROMPT")
-model_name = os.getenv("MODEL_NAME")
+def validate_tiktok_url(url: str) -> str:
+    if not url:
+        raise ValueError("URL cannot be None or empty")
+
+    parsed_url = urlparse(url)
+    if not parsed_url.scheme or not parsed_url.netloc:
+        raise ValueError("Invalid URL format")
+
+    if "tiktok.com" not in parsed_url.netloc:
+        raise ValueError("URL must be from tiktok.com domain")
+
+    return url
 
 
-def generate_video_id(url: str):
+def generate_video_id(url: str) -> str:
+    if not url:
+        raise ValueError("URL cannot be None or empty")
     return url.split("/")[-1]
 
 
-def download_tiktok_video(url: str):
-    video_id = generate_video_id(url)
+def download_tiktok_video(url: str) -> str:
+    validated_url = validate_tiktok_url(url)
+    video_id = generate_video_id(validated_url)
     ydl_opts = {
         "format": "best",
         "outtmpl": f"{video_id}.mp4",
@@ -24,14 +36,14 @@ def download_tiktok_video(url: str):
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            ydl.download([validated_url])
         return f"{video_id}.mp4"
     except Exception as e:
         raise e
 
 
 # TODO: change this polling functionality to be event based
-def upload_video_for_analysis(video_file_name: str):
+def upload_video_for_analysis(video_file_name: str, client: google.genai.Client):
     video_file = client.files.upload(file=video_file_name)
 
     while video_file.state == "PROCESSING":
@@ -46,11 +58,13 @@ def upload_video_for_analysis(video_file_name: str):
     return video_file
 
 
-def get_video_analysis(video_url: str):
+def get_video_analysis(
+    video_url: str, client: google.genai.Client, model_name: str, prompt: str
+):
     file_name = download_tiktok_video(video_url)
-    video_file = upload_video_for_analysis(file_name)
+    video_file = upload_video_for_analysis(file_name, client)
     response = client.models.generate_content(
-        model=ai_model,
+        model=model_name,
         contents=[
             video_file,
             prompt,

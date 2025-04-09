@@ -24,6 +24,8 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - PROMPT=${PROMPT}
       - MODEL_NAME=${MODEL_NAME}
+    volumes:
+      - ./videos:/app/videos
     networks:
       - app-network
 

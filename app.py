@@ -2,12 +2,20 @@ from flask import Flask, request, jsonify
 from datetime import datetime
 import logging
 from tiktok import get_video_analysis
+import google.genai
+import os
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# TODO: implement premature errors if one of the variables are missing
+client = google.genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+prompt = os.getenv("PROMPT")
+model_name = os.getenv("MODEL_NAME")
 
 
 @app.route("/test", methods=["POST"])
@@ -44,6 +52,7 @@ def tiktok_video():
 
     classification_result = get_video_analysis(
         video_url=video_url,
+        client=client,
         prompt="summarize this video and tell if it is antisemitic or not",
         model_name="gemini-2.0-flash",
     )
@@ -62,4 +71,4 @@ def tiktok_video():
 
 if __name__ == "__main__":
     logger.info("Starting Flask server...")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=4999, debug=True)

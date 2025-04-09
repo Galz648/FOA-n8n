@@ -6,7 +6,7 @@ WORKDIR /app
 RUN pip install poetry
 
 # Copy poetry files
-COPY ../pyproject.toml ../poetry.lock* ./
+COPY pyproject.toml poetry.lock* ./
 
 # Configure poetry to not create a virtual environment inside the container
 RUN poetry config virtualenvs.create false
@@ -18,8 +18,8 @@ RUN poetry install --no-interaction --no-ansi --no-root
 RUN mkdir -p videos && chmod 777 videos
 
 # Copy application code
-COPY ../app.py .
-COPY ../tiktok.py .
+COPY app.py .
+COPY tiktok.py .
 
 # Expose the port the app runs on
 EXPOSE 5001
