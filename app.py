@@ -47,28 +47,42 @@ def tiktok_video():
     data = request.get_json()
     logger.info(f"Request data: {data}")
 
-    # Get video_url from query parameters, fallback to TikTok URL if not provided
+    # Get video_url from query parameters
     video_url = request.args.get("video_url")
 
-    classification_result = get_video_analysis(
-        video_url=video_url,
-        client=client,
-        prompt="summarize this video and tell if it is antisemitic or not",
-        model_name="gemini-2.0-flash",
-    )
+    if not video_url:
+        error_message = "Missing required query parameter: video_url"
+        logger.error(error_message)
+        return jsonify({"error": error_message}), 400
 
-    return (
-        jsonify(
-            {
-                "status": "received",
-                "message": f"Video URL: {video_url}",
-                "classification_result": classification_result,
-            }
-        ),
-        200,
-    )
+    try:
+        classification_result = get_video_analysis(
+            video_url=video_url,
+            client=client,
+            prompt="summarize this video and tell if it is antisemitic or not",
+            model_name="gemini-2.0-flash",
+        )
+
+        return (
+            jsonify(
+                {
+                    "status": "received",
+                    "message": f"Video URL: {video_url}",
+                    "classification_result": classification_result,
+                }
+            ),
+            200,
+        )
+    except ValueError as e:
+        error_message = str(e)
+        logger.error(f"Error processing video: {error_message}")
+        return jsonify({"error": error_message}), 400
+    except Exception as e:
+        error_message = f"An unexpected error occurred: {str(e)}"
+        logger.error(error_message)
+        return jsonify({"error": error_message}), 500
 
 
 if __name__ == "__main__":
     logger.info("Starting Flask server...")
-    app.run(host="0.0.0.0", port=4999, debug=True)
+    app.run(host="0.0.0.0", port=3000, debug=True)
