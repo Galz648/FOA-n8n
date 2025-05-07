@@ -48,7 +48,7 @@ def tiktok_video():
     logger.info(f"Request data: {data}")
 
     # Get video_url from query parameters
-    video_url = request.args.get("video_url")
+    video_url = data['video_url']
 
     if not video_url:
         error_message = "Missing required query parameter: video_url"
@@ -59,8 +59,8 @@ def tiktok_video():
         classification_result = get_video_analysis(
             video_url=video_url,
             client=client,
-            prompt="summarize this video and tell if it is antisemitic or not",
-            model_name="gemini-2.0-flash",
+            prompt=prompt,
+            model_name=model_name,
         )
 
         return (
